@@ -91,25 +91,51 @@ def draw_graph_grid(window, turtle, data_points,
     # Reset the turtle pencolor
     turtle.pencolor(original_pencolor)
 
-    x_axes_points = []
+    x_axis_points = []
     for i in range(1, num_horizontal_cells):
         coordinate = (top_left_coord[0] + i*cell_horizontal_len,
                       bottom_right_coord[1])
-        x_axes_points.append(coordinate)
+        x_axis_points.append(coordinate)
 
-    y_axes_points = []
+    y_axis_points = []
     for i in range(1, num_vertical_cells):
         coordinate = (top_left_coord[0],
                       top_left_coord[1] + i*cell_vertical_len)
-        print(coordinate)
-        y_axes_points.append(coordinate)
+        y_axis_points.append(coordinate)
 
-    return (x_axes_points, y_axes_points)
+    return (x_axis_points, y_axis_points)
 
 
-def draw_graph_axes(window, turtle, x_axes_points,
-                    y_axes_points, y_scale, y_start_val):
-    pass
+def draw_graph_axes(window, turtle,
+                    x_axis_points, x_axis_values,
+                    y_axis_points, y_scale, y_start_val):
+
+    font = ("Arial", 12, "normal")
+
+    # Draw the vertical axes
+    turtle.up()
+    for i, point in enumerate(y_axis_points):
+        turtle.setpos(*point)
+        turtle.backward(5)
+
+        # Write the value
+        point_value = y_start_val + (i+1)*y_scale
+        turtle.write(point_value, align="right", font=font)
+
+    # Do not draw x axis if 
+    if x_axis_values is None:
+        return
+
+    for i, point in enumerate(x_axis_points):
+        turtle.setpos(*point)
+        turtle.left(90)
+        turtle.forward(15)
+        turtle.setheading(0)
+
+        # Write the value
+        point_value = x_axis_values[i]
+        turtle.write(point_value, align="center", font=font)
+
 
 def create_graph(window, turtle, data_points, axes=None):
     """Creates and displays a turtle graph on the given window
@@ -147,10 +173,10 @@ def create_graph(window, turtle, data_points, axes=None):
     num_vertical_cells = ceil(data_range / vertical_cell_value)
 
     vertical_grid_range = num_vertical_cells * vertical_cell_len
-    vertical_scale = data_range // vertical_grid_range
+    vertical_scale = data_range // num_vertical_cells
 
     # Draw the graph cells
-    x_axes_points, y_axes_points = draw_graph_grid(
+    x_axis_points, y_axis_points = draw_graph_grid(
         window, turtle, data_points,
         num_vertical_cells=num_vertical_cells,
         top_left_coord=top_left_coord,
@@ -159,9 +185,9 @@ def create_graph(window, turtle, data_points, axes=None):
     # Draw axes
     vertical_grid_value_range = num_vertical_cells * vertical_cell_value
     vertical_grid_value_spacing = (vertical_grid_value_range - data_range) / 2
-    y_start = int(min(data_points) - (vertical_grid_value_spacing))
+    y_start = min(data_points) - vertical_grid_value_spacing
 
     draw_graph_axes(
         window, turtle,
-        x_axes_points, y_axes_points,
-        vertical_scale, y_start_val=y_start)
+        x_axis_points, axes,
+        y_axis_points, vertical_cell_value, y_start_val=y_start)
