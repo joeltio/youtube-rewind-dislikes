@@ -14,4 +14,4 @@ def get_dislikes(api_key, video_id):
     }
 
     response = requests.get(url, params=payload)
-    return response.json()["items"][0]["statistics"]["dislikeCount"]
+    return int(response.json()["items"][0]["statistics"]["dislikeCount"])
