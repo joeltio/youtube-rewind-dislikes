@@ -18,18 +18,6 @@ def draw_rectangle(window, turtle, top_left_coord, bottom_right_coord):
     turtle.setpos(*top_left_coord)
 
 
-def draw_graph_outline(window, turtle, padding_horizontal=30,
-                       padding_vertical=30):
-    height = window.window_height()
-    width = window.window_width()
-
-    top_left = (padding_horizontal, padding_vertical)
-    bottom_right = (width - padding_horizontal, height - padding_vertical)
-
-    # Draw the outline of the graph background
-    draw_rectangle(window, turtle, top_left, bottom_right)
-
-
 def calculate_cells(data):
     """Calculates the number of cells a set of data can be represented with
     based ont its standard deviation."""
@@ -108,6 +96,16 @@ def draw_graph_grid(window, turtle, data_points,
     # Reset the turtle pencolor
     turtle.pencolor(original_pencolor)
 
+    x_axes_points = []
+    for i in range(1, num_horizontal_cells):
+        x_axes_points.append(top_left_coord[0] + i*cell_horizontal_len)
+
+    y_axes_points = []
+    for i in range(1, num_vertical_cells):
+        y_axes_points.append(top_left_coord[1] + i*cell_vertical_len)
+
+    return (x_axes_points, y_axes_points)
+
 
 def create_graph(window, turtle, data_points, axes=None):
     """Creates and displays a turtle graph on the given window
@@ -128,11 +126,13 @@ def create_graph(window, turtle, data_points, axes=None):
     horizontal_padding = 30
     vertical_padding = 30
 
-    draw_graph_outline(window, turtle, horizontal_padding, vertical_padding)
-
+    # Box out an area where the graph should be
     top_left_coord = (horizontal_padding, vertical_padding)
     bottom_right_coord = (window.window_width() - horizontal_padding,
                           window.window_height() - vertical_padding)
-    draw_graph_grid(window, turtle, data_points,
-                    top_left_coord=top_left_coord,
-                    bottom_right_coord=bottom_right_coord)
+
+    draw_rectangle(window, turtle, top_left_coord, bottom_right_coord)
+    x_axes_points, y_axes_points = draw_graph_grid(
+        window, turtle, data_points,
+        top_left_coord=top_left_coord,
+        bottom_right_coord=bottom_right_coord)
