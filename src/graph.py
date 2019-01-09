@@ -171,7 +171,7 @@ def create_graph(window, turtle, data_points, axes=None):
                   None.
                   Default to None.
     """
-    horizontal_padding = 30
+    horizontal_padding = 100
     vertical_padding = 30
 
     # Box out an area where the graph should be
@@ -184,9 +184,18 @@ def create_graph(window, turtle, data_points, axes=None):
 
     # Figure out the scale of the vertical axis
     vertical_len = bottom_right_coord[1] - top_left_coord[1]
-    vertical_cell_value = int(stdev(data_points))
+    if len(data_points) > 1:
+        vertical_cell_value = int(stdev(data_points))
+    else:
+        vertical_cell_value = 3
+
+    if vertical_cell_value == 0:
+        vertical_cell_value = 3
 
     data_range = max(data_points) - min(data_points)
+    if data_range == 0:
+        data_range = 5
+
     num_vertical_cells = ceil(data_range / vertical_cell_value)
 
     # Draw the graph cells
