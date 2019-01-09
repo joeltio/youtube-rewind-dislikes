@@ -137,6 +137,24 @@ def draw_graph_axes(window, turtle,
         turtle.write(point_value, align="center", font=font)
 
 
+def draw_data_points(window, turtle, data_points,
+                     x_axis_points, vertical_scale,
+                     y_start):
+    turtle.up()
+    for i in range(len(x_axis_points)):
+        # Calculate the y value of the point
+        y_decrement = vertical_scale * (data_points[i] - y_start)
+
+        # Draw the dot at the data point
+        axis_point = x_axis_points[i]
+        coordinate = (axis_point[0], axis_point[1] - y_decrement)
+        turtle.setpos(*coordinate)
+        turtle.dot(8)
+
+        # Keep the turtle down to connect the dots for subsequent points
+        turtle.down()
+
+
 def create_graph(window, turtle, data_points, axes=None):
     """Creates and displays a turtle graph on the given window
 
@@ -167,13 +185,9 @@ def create_graph(window, turtle, data_points, axes=None):
     # Figure out the scale of the vertical axis
     vertical_len = bottom_right_coord[1] - top_left_coord[1]
     vertical_cell_value = int(stdev(data_points))
-    vertical_cell_len = vertical_len // vertical_cell_value
 
     data_range = max(data_points) - min(data_points)
     num_vertical_cells = ceil(data_range / vertical_cell_value)
-
-    vertical_grid_range = num_vertical_cells * vertical_cell_len
-    vertical_scale = vertical_grid_range / data_range
 
     # Draw the graph cells
     x_axis_points, y_axis_points = draw_graph_grid(
@@ -191,3 +205,8 @@ def create_graph(window, turtle, data_points, axes=None):
         window, turtle,
         x_axis_points, axes,
         y_axis_points, vertical_cell_value, y_start_val=y_start)
+
+    vertical_scale = vertical_len / vertical_grid_value_range
+
+    draw_data_points(window, turtle, data_points,
+                     x_axis_points, vertical_scale, y_start)
