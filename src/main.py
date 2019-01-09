@@ -48,6 +48,7 @@ def get_api_key(filepath):
 
 def main():
     window = create_fullscreen_window()
+    window.title("Youtube rewind graph")
     turtle = t.Turtle()
     turtle.speed(0)
 
