@@ -1,6 +1,6 @@
 import turtle as t
 import datetime
-import time
+import requests
 
 import graph
 import youtube
@@ -46,6 +46,13 @@ def get_api_key(filepath):
     return f.readline()
 
 
+def get_rewind_dislikes(api_key):
+    try:
+        return youtube.get_dislikes(api_key, settings.YOUTUBE_REWIND_ID)
+    except requests.exceptions.ConnectionError:
+        return None
+
+
 def main():
     window = create_fullscreen_window()
     window.title("Youtube rewind graph")
@@ -60,18 +67,17 @@ def main():
     api_key = get_api_key(settings.API_KEY_LOCATION)
 
     def update_graph():
-        window.clear()
+        new_data_point = get_rewind_dislikes(api_key)
+        if new_data_point is not None:
+            window.clear()
+            current_datetime = datetime.datetime.now()
 
-        new_data_point = youtube.get_dislikes(
-            api_key, settings.YOUTUBE_REWIND_ID)
-        current_datetime = datetime.datetime.now()
+            data["data_points"].enqueue(new_data_point)
+            data["time_points"].enqueue(current_datetime.strftime("%I:%M %p"))
 
-        data["data_points"].enqueue(new_data_point)
-        data["time_points"].enqueue(current_datetime.strftime("%I:%M %p"))
-
-        graph.create_graph(
-            window, turtle,
-            data["data_points"].queue, axes=data["time_points"].queue)
+            graph.create_graph(
+                window, turtle,
+                data["data_points"].queue, axes=data["time_points"].queue)
 
         window.ontimer(update_graph, settings.UPDATE_DELAY_SECONDS * 1000)
 
