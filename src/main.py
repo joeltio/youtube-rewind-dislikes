@@ -69,7 +69,7 @@ def main():
     def update_graph():
         new_data_point = get_rewind_dislikes(api_key)
         if new_data_point is not None:
-            window.clear()
+            turtle.clear()
             current_datetime = datetime.datetime.now()
 
             data["data_points"].enqueue(new_data_point)
